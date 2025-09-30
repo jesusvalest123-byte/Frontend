@@ -54,21 +54,21 @@ function Home() {
       {/* Testimonios */}
       <div className="mt-16 w-full max-w-4xl grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="bg-white p-6 rounded-xl shadow-md flex flex-col items-center text-center">
-          <img src="/assets/testimonio1.png" alt="Cliente 1" className="w-20 h-20 rounded-full mb-4"/>
+          <img src="/assets/testimonio1.png" alt="Cliente 1" className="w-24 h-24 object-cover rounded-lg mb-4"/>
           <h4 className="font-bold text-cyan-500 mb-2">Excelente Servicio</h4>
           <p className="text-gray-600 text-sm">
             Gracias al equipo de Ikernell, hemos mejorado significativamente nuestra eficiencia operativa. Su atención al cliente es excepcional.
           </p>
         </div>
         <div className="bg-white p-6 rounded-xl shadow-md flex flex-col items-center text-center">
-          <img src="/assets/testimonio2.png" alt="Cliente 2" className="w-20 h-20 rounded-full mb-4"/>
+          <img src="/assets/testimonio2.png" alt="Cliente 2" className="w-24 h-24 object-cover rounded-lg mb-4"/>
           <h4 className="font-bold text-cyan-500 mb-2">Soluciones Efectivas</h4>
           <p className="text-gray-600 text-sm">
             Las soluciones personalizadas que nos proporcionaron han sido clave para nuestro crecimiento. Recomendamos Ikernell a otras empresas.
           </p>
         </div>
         <div className="bg-white p-6 rounded-xl shadow-md flex flex-col items-center text-center">
-          <img src="/assets/testimonio3.png" alt="Cliente 3" className="w-20 h-20 rounded-full mb-4"/>
+          <img src="/assets/testimonio3.png" alt="Cliente 3" className="w-24 h-24 object-cover rounded-lg mb-4"/>
           <h4 className="font-bold text-cyan-500 mb-2">Asesoría Invaluable</h4>
           <p className="text-gray-600 text-sm">
             La consultoría ofrecida por Ikernell nos ha permitido tomar mejores decisiones tecnológicas. Su equipo es muy profesional y competente.
@@ -80,4 +80,3 @@ function Home() {
 }
 
 export default Home;
-
