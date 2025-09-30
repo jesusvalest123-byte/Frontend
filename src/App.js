@@ -1,56 +1,89 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
+
+// Pages
 import Home from "./pages/Home";
 import Nosotros from "./pages/Nosotros";
 import Servicios from "./pages/Servicios";
-import Login from "./pages/Login";
-import Formulario from "./pages/Pregunta.JS";
+import Pregunta from "./pages/Pregunta";
+import CoordinadorView from "./pages/CoordinadorView";
+import LiderView from "./pages/LiderView";
+import DesarrolladorView from "./pages/DesarrolladorView";
+
+// Components
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import LoginModal from "./components/LoginModal";
 
 function App() {
+  const [showLogin, setShowLogin] = useState(false);
+  const [userRole, setUserRole] = useState(null); // "coordinador" | "lider" | "desarrollador"
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Maneja login
+  const handleLogin = (role) => {
+    setUserRole(role);
+    setShowLogin(false);
+
+    // Redirigir automáticamente según rol
+    if (role === "coordinador") navigate("/coordinador");
+    if (role === "lider") navigate("/lider");
+    if (role === "desarrollador") navigate("/desarrollador");
+  };
+
+  // Maneja logout
+  const handleLogout = () => {
+    setUserRole(null);
+    navigate("/"); // vuelve a página pública
+  };
+
+  // Cierra sesión si el usuario navega manualmente a rutas públicas
+  useEffect(() => {
+    const rutasPublicas = ["/", "/nosotros", "/servicios", "/pregunta"];
+    const rutasPrivadas = ["/coordinador", "/lider", "/desarrollador"];
+
+    if (userRole && rutasPublicas.includes(location.pathname)) {
+      handleLogout();
+    }
+
+    if (!userRole && rutasPrivadas.includes(location.pathname)) {
+      navigate("/");
+    }
+  }, [location.pathname]); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
-    <Router>
-      <div className="flex flex-col min-h-screen">
-        {/* HEADER */}
-        <header className="bg-cyan-500 flex justify-between items-center p-4">
-          <div className="bg-white p-2 rounded">
-            <img src="/assets/logo.png" alt="Logo" className="h-16" />
-          </div>
-          <nav className="flex gap-6">
-            <Link to="/" className="text-white font-bold hover:text-gray-800">Inicio</Link>
-            <Link to="/nosotros" className="text-white font-bold hover:text-gray-800">Nosotros</Link>
-            <Link to="/servicios" className="text-white font-bold hover:text-gray-800">Servicios</Link>
-          </nav>
-          <div>
-            <Link to="/login">
-              <button className="bg-white text-cyan-500 font-bold px-4 py-2 rounded hover:bg-gray-100">
-                Iniciar sesión
-              </button>
-            </Link>
-          </div>
-        </header>
+    <div className="flex flex-col min-h-screen">
+      <Navbar
+        userRole={userRole}
+        onLoginClick={() => setShowLogin(true)}
+        onLogoutClick={handleLogout}
+      />
 
-        {/* MAIN */}
-        <main className="flex-1 p-8">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/nosotros" element={<Nosotros />} />
-            <Route path="/servicios" element={<Servicios />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/formulario" element={<Formulario />} />
-          </Routes>
-        </main>
+      <main className="flex-1 p-8">
+        <Routes>
+          <Route path="/" element={!userRole ? <Home /> : <Navigate to={`/${userRole}`} />} />
+          <Route path="/nosotros" element={!userRole ? <Nosotros /> : <Navigate to={`/${userRole}`} />} />
+          <Route path="/servicios" element={!userRole ? <Servicios /> : <Navigate to={`/${userRole}`} />} />
+          <Route path="/pregunta" element={<Pregunta />} />
 
-        {/* FOOTER */}
-        <footer className="bg-cyan-500 text-white text-center p-6">
-          <p>© 2025 Ikernell. Todos los derechos reservados.</p>
-          <p>
-            Contacto: contacto@ikernell.com | Tel: +57 300 123 4567 |{" "}
-            <Link to="/pregunta" className="underline hover:text-gray-800">Enviar una pregunta</Link>
-          </p>
-        </footer>
-      </div>
-    </Router>
+          <Route path="/coordinador" element={userRole === "coordinador" ? <CoordinadorView /> : <Navigate to="/" />} />
+          <Route path="/lider" element={userRole === "lider" ? <LiderView /> : <Navigate to="/" />} />
+          <Route path="/desarrollador" element={userRole === "desarrollador" ? <DesarrolladorView /> : <Navigate to="/" />} />
+        </Routes>
+      </main>
+
+      <Footer />
+
+      {showLogin && <LoginModal onLogin={handleLogin} onClose={() => setShowLogin(false)} />}
+    </div>
   );
 }
 
-export default App;
+export default function AppWrapper() {
+  return (
+    <Router>
+      <App />
+    </Router>
+  );
+}
