@@ -16,6 +16,8 @@ function CoordinadorView({ usuario }) {
         return <GestionUsuarios />;
       case "proyectos":
         return <h2 className="text-xl font-bold">Gestión de Proyectos</h2>;
+      case "preguntas":
+        return <Preguntas
       case "reportes":
         return <h2 className="text-xl font-bold">Reportes</h2>;
       default:
@@ -57,6 +59,15 @@ function CoordinadorView({ usuario }) {
         >
           Gestión de Proyectos
         </button>
+          <button
+            onClick={()=> handleSectionChange("preguntas")}
+            className={`text-left p-2 rounded mb-2 ${
+              activeSection === "preguntas" ? "bg-cyan-800" : "hover:bg-cyan-700"
+            }`}
+        >
+          Pregutas
+        </button>
+
         <button
           onClick={() => handleSectionChange("reportes")}
           className={`text-left p-2 rounded mb-2 ${
