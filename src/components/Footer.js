@@ -1,15 +1,21 @@
 import React from "react";
-import { Link } from "react-router-dom";
 
-function Footer() {
+function Footer({ onPreguntaClick }) {
   return (
     <footer className="bg-cyan-500 text-white text-center p-6">
       <p>© 2025 Ikernell. Todos los derechos reservados.</p>
       <p>
         Contacto: contacto@ikernell.com | Tel: +57 300 123 4567 |{" "}
-        <Link to="/pregunta" className="underline hover:text-gray-800">
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            onPreguntaClick(); // Abre el modal de pregunta
+          }}
+          className="underline hover:text-gray-800 cursor-pointer"
+        >
           Enviar una pregunta
-        </Link>
+        </a>
       </p>
     </footer>
   );

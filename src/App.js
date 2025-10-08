@@ -17,65 +17,60 @@ import LoginModal from "./components/LoginModal";
 
 function App() {
   const [showLogin, setShowLogin] = useState(false);
-  const [userRole, setUserRole] = useState(null); // "coordinador" | "lider" | "desarrollador"
+  const [showPregunta, setShowPregunta] = useState(false); // <-- Estado para modal de pregunta
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Maneja login
-  const handleLogin = (role) => {
-    setUserRole(role);
+  const handleLogin = (userData) => {
+    setUser(userData);
     setShowLogin(false);
 
-    // Redirigir automáticamente según rol
-    if (role === "coordinador") navigate("/coordinador");
-    if (role === "lider") navigate("/lider");
-    if (role === "desarrollador") navigate("/desarrollador");
+    if (userData.role === "coordinador") navigate("/coordinador");
+    if (userData.role === "lider") navigate("/lider");
+    if (userData.role === "desarrollador") navigate("/desarrollador");
   };
 
-  // Maneja logout
   const handleLogout = () => {
-    setUserRole(null);
-    navigate("/"); // vuelve a página pública
+    setUser(null);
+    navigate("/");
   };
 
-  // Cierra sesión si el usuario navega manualmente a rutas públicas
   useEffect(() => {
-    const rutasPublicas = ["/", "/nosotros", "/servicios", "/pregunta"];
+    const rutasPublicas = ["/", "/nosotros", "/servicios"];
     const rutasPrivadas = ["/coordinador", "/lider", "/desarrollador"];
 
-    if (userRole && rutasPublicas.includes(location.pathname)) {
-      handleLogout();
-    }
-
-    if (!userRole && rutasPrivadas.includes(location.pathname)) {
-      navigate("/");
-    }
+    if (user && rutasPublicas.includes(location.pathname)) handleLogout();
+    if (!user && rutasPrivadas.includes(location.pathname)) navigate("/");
   }, [location.pathname]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar
-        userRole={userRole}
+        userRole={user?.role}
         onLoginClick={() => setShowLogin(true)}
         onLogoutClick={handleLogout}
       />
 
       <main className="flex-1 p-8">
         <Routes>
-          <Route path="/" element={!userRole ? <Home /> : <Navigate to={`/${userRole}`} />} />
-          <Route path="/nosotros" element={!userRole ? <Nosotros /> : <Navigate to={`/${userRole}`} />} />
-          <Route path="/servicios" element={!userRole ? <Servicios /> : <Navigate to={`/${userRole}`} />} />
-          <Route path="/pregunta" element={<Pregunta />} />
+          <Route path="/" element={!user ? <Home /> : <Navigate to={`/${user.role}`} />} />
+          <Route path="/nosotros" element={!user ? <Nosotros /> : <Navigate to={`/${user.role}`} />} />
+          <Route path="/servicios" element={!user ? <Servicios /> : <Navigate to={`/${user.role}`} />} />
 
-          <Route path="/coordinador" element={userRole === "coordinador" ? <CoordinadorView /> : <Navigate to="/" />} />
-          <Route path="/lider" element={userRole === "lider" ? <LiderView /> : <Navigate to="/" />} />
-          <Route path="/desarrollador" element={userRole === "desarrollador" ? <DesarrolladorView /> : <Navigate to="/" />} />
+          <Route path="/coordinador" element={user?.role === "coordinador" ? <CoordinadorView usuario={user} /> : <Navigate to="/" />} />
+          <Route path="/lider" element={user?.role === "lider" ? <LiderView usuario={user} /> : <Navigate to="/" />} />
+          <Route path="/desarrollador" element={user?.role === "desarrollador" ? <DesarrolladorView usuario={user} /> : <Navigate to="/" />} />
         </Routes>
       </main>
 
-      <Footer />
+      {/* Pasamos la función para abrir el modal de pregunta */}
+      <Footer onPreguntaClick={() => setShowPregunta(true)} />
 
       {showLogin && <LoginModal onLogin={handleLogin} onClose={() => setShowLogin(false)} />}
+      
+      {/* Modal de pregunta */}
+      {showPregunta && <Pregunta onClose={() => setShowPregunta(false)} />}
     </div>
   );
 }

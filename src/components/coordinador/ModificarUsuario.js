@@ -44,7 +44,7 @@ function ModificarUsuario({ usuario, onBack }) {
       // Agregar foto solo si se seleccionó
       if (fotoFile) data.append("foto", fotoFile);
 
-      const res = await axios.put(
+      await axios.put(
         `http://localhost:8080/api/usuarios/${usuario.idusuario}`,
         data,
         { headers: { "Content-Type": "multipart/form-data" } }

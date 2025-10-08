@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import GestionUsuarios from "../components/coordinador/GestionUsuarios";
+import PreguntasPanel from "../components/coordinador/PreguntasPanel";
+import ReportesPanel from "../components/coordinador/ReportesCoorPanel";
+import ProyectosPanel from "../components/coordinador/ProyectosPanel";
 
 function CoordinadorView({ usuario }) {
   const [activeSection, setActiveSection] = useState("bienvenida");
@@ -15,11 +18,11 @@ function CoordinadorView({ usuario }) {
       case "usuarios":
         return <GestionUsuarios />;
       case "proyectos":
-        return <h2 className="text-xl font-bold">Gestión de Proyectos</h2>;
+        return <ProyectosPanel />;
       case "preguntas":
-        return <Preguntas
+        return <PreguntasPanel />;
       case "reportes":
-        return <h2 className="text-xl font-bold">Reportes</h2>;
+        return <ReportesPanel />;
       default:
         return (
           <div className="text-center mt-10">
@@ -59,15 +62,14 @@ function CoordinadorView({ usuario }) {
         >
           Gestión de Proyectos
         </button>
-          <button
-            onClick={()=> handleSectionChange("preguntas")}
-            className={`text-left p-2 rounded mb-2 ${
-              activeSection === "preguntas" ? "bg-cyan-800" : "hover:bg-cyan-700"
-            }`}
+        <button
+          onClick={() => handleSectionChange("preguntas")}
+          className={`text-left p-2 rounded mb-2 ${
+            activeSection === "preguntas" ? "bg-cyan-800" : "hover:bg-cyan-700"
+          }`}
         >
-          Pregutas
+          Preguntas
         </button>
-
         <button
           onClick={() => handleSectionChange("reportes")}
           className={`text-left p-2 rounded mb-2 ${
@@ -95,3 +97,4 @@ function CoordinadorView({ usuario }) {
 }
 
 export default CoordinadorView;
+

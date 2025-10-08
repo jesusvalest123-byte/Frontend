@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-function Navbar({ userRole, onLoginClick, onLogoutClick }) {
+function Navbar({ userRole, onLoginClick, onLogoutClick, onPreguntaClick }) {
   return (
     <header className="bg-cyan-500 flex justify-between items-center p-4">
       {/* Logo */}
@@ -24,8 +24,9 @@ function Navbar({ userRole, onLoginClick, onLogoutClick }) {
         </nav>
       )}
 
-      {/* Botón login/logout */}
-      <div>
+      {/* Botones de sesión y Pregunta */}
+      <div className="flex gap-2 items-center">
+
         {!userRole ? (
           <button
             onClick={onLoginClick}

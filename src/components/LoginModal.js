@@ -20,12 +20,15 @@ function LoginModal({ onLogin, onClose }) {
 
       const data = await response.json();
 
+      if (!data || !data.idRol) throw new Error("Usuario no logueado correctamente");
+
       let role = "";
       if (data.idRol === 1) role = "coordinador";
       if (data.idRol === 2) role = "lider";
       if (data.idRol === 3) role = "desarrollador";
 
-      onLogin(role);
+      // Mandamos objeto completo para no perder info
+      onLogin({ role, idusuario: data.idusuario, nombre: data.nombre, correo: data.correo });
       onClose();
     } catch (err) {
       setError(err.message);
@@ -90,7 +93,3 @@ function LoginModal({ onLogin, onClose }) {
 }
 
 export default LoginModal;
-
-
-
-
