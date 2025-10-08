@@ -5,7 +5,7 @@ function ConsultarUsuarios({ onBack, onModificar, onEliminar }) {
   const [busquedaId, setBusquedaId] = useState("");
   const [resultado, setResultado] = useState(null);
 
-  // Cargar todos los usuarios al montar el componente
+ 
   useEffect(() => {
     fetch("http://localhost:8080/api/usuarios")
       .then((res) => res.json())
@@ -31,7 +31,7 @@ function ConsultarUsuarios({ onBack, onModificar, onEliminar }) {
       });
   };
 
-  // Función para obtener la URL completa de la foto
+  
   const obtenerUrlFoto = (fotoLink) => {
     return fotoLink ? `http://localhost:8080${fotoLink}` : "https://via.placeholder.com/150";
   };
@@ -42,7 +42,7 @@ function ConsultarUsuarios({ onBack, onModificar, onEliminar }) {
         Consultar Usuarios
       </h2>
 
-      {/* Formulario de búsqueda */}
+    
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <input
           type="number"
@@ -59,7 +59,6 @@ function ConsultarUsuarios({ onBack, onModificar, onEliminar }) {
         </button>
       </div>
 
-      {/* Mostrar un usuario por ID */}
       {resultado ? (
         <div className="overflow-x-auto">
           <div className="flex justify-center mb-4">
@@ -116,7 +115,7 @@ function ConsultarUsuarios({ onBack, onModificar, onEliminar }) {
         </div>
       ) : (
         <>
-          {/* Mostrar todos los usuarios */}
+          
           <div className="overflow-x-auto">
             <table className="w-full border border-gray-300 rounded-lg">
               <thead>

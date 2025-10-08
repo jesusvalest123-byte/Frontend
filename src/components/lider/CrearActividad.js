@@ -6,7 +6,7 @@ function CrearActividad({ etapa, usuario, onBack, onCreado }) {
     nombreActividad: "",
     descripcion: "",
     idDesarrollador: "",
-    estado: "Pendiente", // Por defecto
+    estado: "Pendiente", 
   });
 
   const [todosDesarrolladores, setTodosDesarrolladores] = useState([]);

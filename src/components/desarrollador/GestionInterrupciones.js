@@ -32,7 +32,7 @@ function GestionInterrupciones({ etapa, usuario }) {
     }
   }, [etapa]);
 
-  // Crear interrupción
+
   if (crearVisible) {
     return (
       <CrearInterrupcion
@@ -47,7 +47,7 @@ function GestionInterrupciones({ etapa, usuario }) {
     );
   }
 
-  // Modificar interrupción
+
   if (interrupcionEditar) {
     return (
       <ModificarInterrupcion
@@ -61,7 +61,7 @@ function GestionInterrupciones({ etapa, usuario }) {
     );
   }
 
-  // Eliminar interrupción
+  
   if (modalEliminar) {
     return (
       <EliminarInterrupcion

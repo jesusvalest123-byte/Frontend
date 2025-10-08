@@ -32,9 +32,17 @@ function ModificarError({ errorEditar, onBack, onActualizado }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // ✅ No enviamos fecha modificada, ya que el backend la mantiene igual
+      const data = {
+        tipoError: formData.tipoError,
+        descripcion: formData.descripcion,
+        idEtapa: formData.idEtapa,
+        idUsuario: formData.idUsuario,
+      };
+
       await axios.put(
         `http://localhost:8080/api/errores/${errorEditar.idError}`,
-        formData
+        data
       );
       setMensaje("✅ Error actualizado correctamente");
       if (onActualizado) onActualizado();
@@ -73,17 +81,16 @@ function ModificarError({ errorEditar, onBack, onActualizado }) {
           />
         </div>
         <div>
-          <label>Fecha</label>
+          <label>Fecha (solo lectura)</label>
           <input
             type="date"
             name="fecha"
             value={formData.fecha}
-            onChange={handleChange}
-            required
-            className="border p-2 rounded w-full"
+            disabled
+            className="border p-2 rounded w-full bg-gray-100 text-gray-700 cursor-not-allowed"
           />
         </div>
-        {/* campos ocultos para idEtapa y idUsuario */}
+
         <input type="hidden" name="idEtapa" value={formData.idEtapa} />
         <input type="hidden" name="idUsuario" value={formData.idUsuario} />
 

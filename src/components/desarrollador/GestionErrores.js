@@ -17,7 +17,7 @@ function GestionErrores({ etapa, usuario }) {
       const res = await axios.get(
         `http://localhost:8080/api/errores/por-usuario/${usuario.idusuario}`
       );
-      // Filtramos solo los errores de la etapa seleccionada
+     
       setErrores(res.data.filter((e) => e.idEtapa === etapa.idEtapa));
     } catch (err) {
       console.error(err);
@@ -31,7 +31,7 @@ function GestionErrores({ etapa, usuario }) {
     fetchErrores();
   }, [etapa]);
 
-  // Si estamos creando un error, mostramos solo el formulario
+  
   if (crearVisible) {
     return (
       <CrearError
@@ -46,7 +46,7 @@ function GestionErrores({ etapa, usuario }) {
     );
   }
 
-  // Si estamos modificando un error, mostramos solo el formulario
+
   if (errorEditar) {
     return (
       <ModificarError
@@ -60,7 +60,7 @@ function GestionErrores({ etapa, usuario }) {
     );
   }
 
-  // Si estamos eliminando un error, mostramos solo el modal
+
   if (modalEliminar) {
     return (
       <EliminarError

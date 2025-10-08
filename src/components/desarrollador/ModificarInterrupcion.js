@@ -28,16 +28,15 @@ function ModificarInterrupcion({ interrupcion, onBack, onActualizado }) {
         {
           tipoInterrupcion,
           descripcion,
-          fecha,
+          // ❌ No enviamos la fecha modificada, solo la original
+          fecha: interrupcion.fecha,
           duracion: parseInt(duracion),
           idEtapa: interrupcion.etapa?.idEtapa || interrupcion.idEtapa,
           idUsuario: interrupcion.usuario?.idusuario || interrupcion.idUsuario,
         }
       );
       toast.success("🟡 Interrupción modificada con éxito");
-      setTimeout(() => {
-        onActualizado();
-      }, 1000);
+      setTimeout(onActualizado, 1000);
     } catch (err) {
       console.error("Error al modificar interrupción:", err);
       toast.error("❌ Error al modificar la interrupción");
@@ -68,12 +67,13 @@ function ModificarInterrupcion({ interrupcion, onBack, onActualizado }) {
           className="w-full p-2 border rounded"
           required
         />
+        {/* 🔒 Campo de fecha bloqueado */}
         <input
           type="date"
           value={fecha}
-          onChange={(e) => setFecha(e.target.value)}
-          className="w-full p-2 border rounded"
-          required
+          readOnly
+          disabled
+          className="w-full p-2 border rounded bg-gray-100 text-gray-600 cursor-not-allowed"
         />
         <input
           type="number"

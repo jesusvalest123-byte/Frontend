@@ -10,7 +10,7 @@ function Footer({ onPreguntaClick }) {
           href="#"
           onClick={(e) => {
             e.preventDefault();
-            onPreguntaClick(); // Abre el modal de pregunta
+            onPreguntaClick();
           }}
           className="underline hover:text-gray-800 cursor-pointer"
         >

@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import ModificarEtapa from "./ModificarEtapa"; // Componente de modificación
-import EliminarEtapa from "./EliminarEtapa";   // Componente de eliminación
+import ModificarEtapa from "./ModificarEtapa"; 
+import EliminarEtapa from "./EliminarEtapa";   
+import CrearEtapa from "./CrearEtapa";   
 
-function GestionEtapas({ proyecto, onBack, onSelectEtapa }) { // <-- se cambió onGoActividades por onSelectEtapa
+function GestionEtapas({ proyecto, onBack, onSelectEtapa }) {
   const [etapas, setEtapas] = useState([]);
   const [etapaSeleccionada, setEtapaSeleccionada] = useState(null);
   const [etapaParaEliminar, setEtapaParaEliminar] = useState(null);
+  const [crearEtapaVisible, setCrearEtapaVisible] = useState(false); 
   const [mensaje, setMensaje] = useState("");
 
-  // Cargar etapas del proyecto
   useEffect(() => {
     if (proyecto?.id) {
       fetchEtapas(proyecto.id);
@@ -21,16 +22,14 @@ function GestionEtapas({ proyecto, onBack, onSelectEtapa }) { // <-- se cambió 
       .get(`http://localhost:8080/api/etapas/by-proyecto/${idProyecto}`)
       .then((res) => setEtapas(res.data))
       .catch((err) => console.error("Error cargando etapas:", err));
-  };
+  };  
 
-  // Manejo de actualización después de modificar o eliminar
   const handleActualizado = () => fetchEtapas(proyecto.id);
   const handleEliminado = () => {
     setEtapaParaEliminar(null);
     fetchEtapas(proyecto.id);
   };
 
-  // Mostrar formulario de modificación
   if (etapaSeleccionada) {
     return (
       <ModificarEtapa
@@ -41,13 +40,22 @@ function GestionEtapas({ proyecto, onBack, onSelectEtapa }) { // <-- se cambió 
     );
   }
 
-  // Mostrar modal de eliminación
   if (etapaParaEliminar) {
     return (
       <EliminarEtapa
         etapa={etapaParaEliminar}
         onBack={() => setEtapaParaEliminar(null)}
         onEliminado={handleEliminado}
+      />
+    );
+  }
+
+  if (crearEtapaVisible) {
+    return (
+      <CrearEtapa
+        proyecto={proyecto}
+        onBack={() => setCrearEtapaVisible(false)}
+        onCreado={handleActualizado}
       />
     );
   }
@@ -59,6 +67,13 @@ function GestionEtapas({ proyecto, onBack, onSelectEtapa }) { // <-- se cambió 
       </h2>
 
       {mensaje && <p className="text-center mb-4">{mensaje}</p>}
+
+      <button
+        onClick={() => setCrearEtapaVisible(true)}
+        className="mb-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+      >
+        ➕ Crear Etapa
+      </button>
 
       <table className="w-full border border-gray-300 rounded">
         <thead>
@@ -93,7 +108,7 @@ function GestionEtapas({ proyecto, onBack, onSelectEtapa }) { // <-- se cambió 
                   🗑️ Eliminar
                 </button>
                 <button
-                  onClick={() => onSelectEtapa(e)} // <-- corregido, pasa la etapa correcta
+                  onClick={() => onSelectEtapa(e)}
                   className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
                 >
                   📝 Actividades

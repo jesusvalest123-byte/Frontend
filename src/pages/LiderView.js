@@ -4,6 +4,7 @@ import GestionEtapas from "../components/lider/GestionEtapas";
 import GestionActividades from "../components/lider/GestionActividades";
 import ListaProyectosActividades from "../components/lider/ListaProyectosActividades";
 import ReportesLiderPanel from "../components/lider/ReportesLiderPanel";
+import TrabajadoresInfo from "../components/TrabajadoresInfo"; // 👈 Nuevo componente
 
 function LiderView({ usuario }) {
   const [vistaActual, setVistaActual] = useState("panel");
@@ -11,24 +12,21 @@ function LiderView({ usuario }) {
   const [proyectoSeleccionado, setProyectoSeleccionado] = useState(null);
   const [etapaSeleccionada, setEtapaSeleccionada] = useState(null);
 
-  // --- PANEL LATERAL ---
   const handleIrAProyectos = () => setVistaActual("proyectos");
   const handleIrAEtapasActividades = () => setVistaActual("listaActividades");
   const handleIrAReportes = () => setVistaActual("reportes");
+  const handleIrAServicios = () => setVistaActual("servicios"); // 👈 Nuevo botón
 
-  // --- FLUJO Proyectos → Etapas ---
   const handleSeleccionProyecto = (proyecto) => {
     setProyectoSeleccionado(proyecto);
     setVistaActual("etapas");
   };
 
-  // --- FLUJO Etapas → Actividades ---
   const handleSeleccionEtapa = (etapa) => {
     setEtapaSeleccionada(etapa);
     setVistaActual("actividades");
   };
 
-  // --- VOLVER ATRÁS ---
   const handleVolverAProyectos = () => {
     setProyectoSeleccionado(null);
     setVistaActual("proyectos");
@@ -47,7 +45,6 @@ function LiderView({ usuario }) {
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      {/* --- PANEL LATERAL --- */}
       <aside
         className={`fixed md:static top-0 left-0 h-full w-64 bg-cyan-600 text-white flex flex-col p-4 transform transition-transform duration-300 z-50 ${
           menuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
@@ -85,6 +82,15 @@ function LiderView({ usuario }) {
         </button>
 
         <button
+          onClick={handleIrAServicios}
+          className={`text-left p-2 rounded mb-2 ${
+            vistaActual === "servicios" ? "bg-cyan-800" : "hover:bg-cyan-700"
+          }`}
+        >
+          Servicios
+        </button>
+
+        <button
           onClick={handleVolverAPanel}
           className="text-left p-2 rounded mt-auto bg-cyan-700 hover:bg-cyan-800"
         >
@@ -92,7 +98,6 @@ function LiderView({ usuario }) {
         </button>
       </aside>
 
-      {/* --- CONTENIDO PRINCIPAL --- */}
       <main className="flex-1 p-6 md:ml-0 relative">
         <button
           className="md:hidden mb-4 bg-cyan-600 text-white px-4 py-2 rounded-lg"
@@ -101,19 +106,18 @@ function LiderView({ usuario }) {
           {menuOpen ? "Cerrar Menú" : "Abrir Menú"}
         </button>
 
-        {/* --- PANEL PRINCIPAL --- */}
         {vistaActual === "panel" && (
           <div className="text-center space-y-6">
             <h1 className="text-3xl font-bold text-cyan-700 mb-8">
               Panel del Líder
             </h1>
             <p className="text-gray-600">
-              Usa el menú lateral para gestionar proyectos, etapas, actividades o reportes.
+              Usa el menú lateral para gestionar proyectos, etapas, actividades,
+              reportes o servicios.
             </p>
           </div>
         )}
 
-        {/* --- GESTIÓN DE PROYECTOS --- */}
         {vistaActual === "proyectos" && (
           <GestionProyectos
             usuario={usuario}
@@ -122,14 +126,10 @@ function LiderView({ usuario }) {
           />
         )}
 
-        {/* --- LISTA DE PROYECTOS → ETAPAS Y ACTIVIDADES --- */}
         {vistaActual === "listaActividades" && (
-          <ListaProyectosActividades
-            onBack={handleVolverAPanel}
-          />
+          <ListaProyectosActividades onBack={handleVolverAPanel} />
         )}
 
-        {/* --- GESTIÓN DE ETAPAS --- */}
         {vistaActual === "etapas" && proyectoSeleccionado && (
           <GestionEtapas
             proyecto={proyectoSeleccionado}
@@ -138,7 +138,6 @@ function LiderView({ usuario }) {
           />
         )}
 
-        {/* --- GESTIÓN DE ACTIVIDADES --- */}
         {vistaActual === "actividades" && etapaSeleccionada && (
           <GestionActividades
             etapa={etapaSeleccionada}
@@ -147,10 +146,11 @@ function LiderView({ usuario }) {
           />
         )}
 
-        {/* --- REPORTES --- */}
         {vistaActual === "reportes" && (
           <ReportesLiderPanel onBack={handleVolverAPanel} />
         )}
+
+        {vistaActual === "servicios" && <TrabajadoresInfo />}
       </main>
     </div>
   );

@@ -7,7 +7,6 @@ function PreguntasPanel() {
   const [preguntas, setPreguntas] = useState([]);
   const [cargando, setCargando] = useState(true);
 
-  // Cargar todas las preguntas desde el backend
   const fetchPreguntas = async () => {
     setCargando(true);
     try {
@@ -22,7 +21,7 @@ function PreguntasPanel() {
     }
   };
 
-  // Eliminar pregunta
+ 
   const eliminarPregunta = async (id) => {
     if (!window.confirm("¿Está seguro de eliminar esta pregunta?")) return;
     try {

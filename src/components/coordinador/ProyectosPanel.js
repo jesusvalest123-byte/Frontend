@@ -10,7 +10,7 @@ function ProyectosCoordinador({ onBack }) {
   const [usuarios, setUsuarios] = useState([]);
   const [mensaje, setMensaje] = useState("");
 
-  // Cargar todos los proyectos al montar el componente
+
   useEffect(() => {
     fetchProyectos();
     fetchUsuarios();
@@ -62,7 +62,7 @@ function ProyectosCoordinador({ onBack }) {
     try {
       await axios.put(`http://localhost:8080/api/proyectos/${resultado.id}`, data);
       setMensaje("✅ Líder y desarrolladores asignados correctamente");
-      fetchProyectos(); // refrescar lista
+      fetchProyectos(); 
       setResultado(null);
     } catch (error) {
       console.error(error);
@@ -76,7 +76,7 @@ function ProyectosCoordinador({ onBack }) {
         Panel de Proyectos - Coordinador
       </h2>
 
-      {/* Formulario de búsqueda */}
+   
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <input
           type="number"
@@ -99,7 +99,7 @@ function ProyectosCoordinador({ onBack }) {
         </div>
       )}
 
-      {/* Mostrar un proyecto por ID */}
+   
       {resultado ? (
         <div className="overflow-x-auto mb-6">
           <table className="w-full border border-gray-300 rounded-lg">
@@ -144,7 +144,7 @@ function ProyectosCoordinador({ onBack }) {
                   >
                     <option value="">--Seleccionar líder--</option>
                     {usuarios
-                      .filter((u) => u.idRol === 2) // solo líderes
+                      .filter((u) => u.idRol === 2) 
                       .map((u) => (
                         <option key={u.idusuario} value={u.idusuario}>
                           {u.nombre} {u.apellido}
@@ -165,7 +165,7 @@ function ProyectosCoordinador({ onBack }) {
                     className="border p-2 rounded w-full focus:ring-2 focus:ring-blue-500"
                   >
                     {usuarios
-                      .filter((u) => u.idRol === 3) // solo desarrolladores
+                      .filter((u) => u.idRol === 3) 
                       .map((u) => (
                         <option key={u.idusuario} value={u.idusuario}>
                           {u.nombre} {u.apellido}
@@ -194,7 +194,7 @@ function ProyectosCoordinador({ onBack }) {
         </div>
       ) : (
         <>
-          {/* Mostrar todos los proyectos */}
+         
           <div className="overflow-x-auto">
             <table className="w-full border border-gray-300 rounded-lg">
               <thead>

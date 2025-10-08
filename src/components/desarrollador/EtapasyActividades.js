@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ActividadesDesarrollador from "./ActividadesDesarrollador";
 import GestionErrores from "./GestionErrores";
-import GestionInterrupciones from "./GestionInterrupciones"; // si ya creaste la vista
+import GestionInterrupciones from "./GestionInterrupciones"; 
 
 function EtapasyActividades({ proyecto, usuario, vista, etapaSeleccionada }) {
   const [etapas, setEtapas] = useState([]);
@@ -29,17 +29,17 @@ function EtapasyActividades({ proyecto, usuario, vista, etapaSeleccionada }) {
 
   if (cargando) return <p>Cargando etapas y actividades...</p>;
 
-  // Vista de errores
+
   if (vista === "errores" && etapaSeleccionada) {
     return <GestionErrores etapa={etapaSeleccionada} usuario={usuario} />;
   }
 
-  // Vista de interrupciones
+  
   if (vista === "interrupciones" && etapaSeleccionada) {
     return <GestionInterrupciones etapa={etapaSeleccionada} usuario={usuario} />;
   }
 
-  // Vista por defecto: mostrar todas las etapas y sus actividades
+ 
   return (
     <div>
       <h3 className="text-xl font-semibold mb-4">

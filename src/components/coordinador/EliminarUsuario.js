@@ -51,7 +51,7 @@ function EliminarUsuario({ usuario, onBack }) {
         </button>
       </div>
 
-      {/* Modal de confirmación */}
+      
       {modalAbierto && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fadeIn">
           <div className="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full text-center animate-scaleIn">

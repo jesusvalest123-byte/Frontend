@@ -35,13 +35,12 @@ function ModificarUsuario({ usuario, onBack }) {
     try {
       const data = new FormData();
 
-      // Crear Blob con JSON de usuario
+
       data.append(
         "usuario",
         new Blob([JSON.stringify(formData)], { type: "application/json" })
       );
 
-      // Agregar foto solo si se seleccionó
       if (fotoFile) data.append("foto", fotoFile);
 
       await axios.put(
@@ -51,7 +50,7 @@ function ModificarUsuario({ usuario, onBack }) {
       );
 
       setMensaje("✅ Usuario modificado correctamente");
-      onBack(); // Volver a la lista o pantalla anterior
+      onBack(); 
     } catch (error) {
       console.error("Error al modificar usuario:", error);
       setMensaje("❌ Error al modificar usuario");

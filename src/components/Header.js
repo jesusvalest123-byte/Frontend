@@ -16,14 +16,14 @@ function Header({ userRole, setUserRole, setShowLogin }) {
         {!userRole ? (
           <button
             className="bg-white text-cyan-500 font-bold px-4 py-2 rounded hover:bg-gray-100"
-            onClick={() => setShowLogin(true)}   // ✅ abre el modal
+            onClick={() => setShowLogin(true)}   
           >
             Iniciar sesión
           </button>
         ) : (
           <button
             className="bg-white text-cyan-500 font-bold px-4 py-2 rounded hover:bg-gray-100"
-            onClick={() => setUserRole(null)}   // ✅ cierra sesión
+            onClick={() => setUserRole(null)}   
           >
             Cerrar sesión
           </button>

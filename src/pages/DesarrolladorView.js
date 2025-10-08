@@ -3,6 +3,7 @@ import axios from "axios";
 import EtapasyActividades from "../components/desarrollador/EtapasyActividades";
 import GestionErrores from "../components/desarrollador/GestionErrores";
 import GestionInterrupciones from "../components/desarrollador/GestionInterrupciones";
+import TrabajadoresInfo from "../components/TrabajadoresInfo"; // <-- importamos la vista estática
 
 function DesarrolladorView({ usuario }) {
   const [vistaActual, setVistaActual] = useState("actividades");
@@ -12,7 +13,6 @@ function DesarrolladorView({ usuario }) {
   const [etapaSeleccionada, setEtapaSeleccionada] = useState(null);
   const [etapasProyecto, setEtapasProyecto] = useState([]);
 
-  // Cargar proyectos del usuario
   useEffect(() => {
     const fetchProyectos = async () => {
       try {
@@ -27,7 +27,6 @@ function DesarrolladorView({ usuario }) {
     fetchProyectos();
   }, [usuario.idusuario]);
 
-  // Cargar etapas del proyecto seleccionado
   useEffect(() => {
     if (!proyectoSeleccionado) {
       setEtapasProyecto([]);
@@ -49,7 +48,6 @@ function DesarrolladorView({ usuario }) {
 
   return (
     <div className="flex min-h-screen bg-gray-100">
-      {/* PANEL LATERAL */}
       <aside
         className={`fixed md:static top-0 left-0 h-full w-64 bg-cyan-600 text-white flex flex-col p-4 transform transition-transform duration-300 z-50 ${
           menuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
@@ -86,6 +84,16 @@ function DesarrolladorView({ usuario }) {
           Interrupciones
         </button>
 
+      
+        <button
+          onClick={() => setVistaActual("trabajadores")}
+          className={`text-left p-2 rounded mb-2 ${
+            vistaActual === "trabajadores" ? "bg-cyan-800" : "hover:bg-cyan-700"
+          }`}
+        >
+        Servicios
+        </button>
+
         <button
           onClick={() => setVistaActual("panel")}
           className="text-left p-2 rounded mt-auto bg-cyan-700 hover:bg-cyan-800"
@@ -94,7 +102,6 @@ function DesarrolladorView({ usuario }) {
         </button>
       </aside>
 
-      {/* CONTENIDO PRINCIPAL */}
       <main className="flex-1 p-6 md:ml-0 relative">
         <button
           className="md:hidden mb-4 bg-cyan-600 text-white px-4 py-2 rounded-lg"
@@ -103,7 +110,6 @@ function DesarrolladorView({ usuario }) {
           {menuOpen ? "Cerrar Menú" : "Abrir Menú"}
         </button>
 
-        {/* VISTA DE ACTIVIDADES */}
         {vistaActual === "actividades" && (
           <div>
             <h2 className="text-3xl font-bold text-cyan-700 mb-6">
@@ -156,7 +162,6 @@ function DesarrolladorView({ usuario }) {
           </div>
         )}
 
-        {/* VISTA DE ERRORES */}
         {vistaActual === "errores" && proyectoSeleccionado && (
           <div>
             <h2 className="text-2xl font-bold text-cyan-700 mb-4">
@@ -187,7 +192,6 @@ function DesarrolladorView({ usuario }) {
           </div>
         )}
 
-        {/* ✅ VISTA DE INTERRUPCIONES IGUAL A ERRORES */}
         {vistaActual === "interrupciones" && proyectoSeleccionado && (
           <div>
             <h2 className="text-2xl font-bold text-cyan-700 mb-4">
@@ -218,7 +222,13 @@ function DesarrolladorView({ usuario }) {
           </div>
         )}
 
-        {/* VISTA PRINCIPAL */}
+       
+        {vistaActual === "trabajadores" && (
+          <div>
+            <TrabajadoresInfo />
+          </div>
+        )}
+
         {vistaActual === "panel" && (
           <div className="text-center space-y-6">
             <h1 className="text-3xl font-bold text-cyan-700 mb-8">

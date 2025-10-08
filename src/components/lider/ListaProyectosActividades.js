@@ -9,7 +9,7 @@ function ListaProyectosActividades() {
   const [etapaSeleccionada, setEtapaSeleccionada] = useState(null);
   const [usuarios, setUsuarios] = useState([]);
 
-  // Cargar proyectos y usuarios al iniciar
+ 
   useEffect(() => {
     axios
       .get("http://localhost:8080/api/proyectos")
@@ -51,7 +51,7 @@ function ListaProyectosActividades() {
         Proyectos y Etapas
       </h2>
 
-      {/* Tabla de proyectos */}
+      
       <table className="w-full border border-gray-300 rounded-lg shadow mb-6">
         <thead>
           <tr className="bg-gray-100 text-left">
@@ -105,7 +105,7 @@ function ListaProyectosActividades() {
         </tbody>
       </table>
 
-      {/* Tabla de etapas */}
+     
       {etapas.length > 0 && (
         <div>
           <h3 className="text-xl font-semibold text-blue-600 mb-4 text-center">
@@ -153,7 +153,7 @@ function ListaProyectosActividades() {
         </div>
       )}
 
-      {/* Tabla de actividades */}
+ 
       {actividades.length > 0 && (
         <div>
           <h3 className="text-xl font-semibold text-blue-600 mb-4 text-center">

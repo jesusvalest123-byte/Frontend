@@ -3,6 +3,7 @@ import GestionUsuarios from "../components/coordinador/GestionUsuarios";
 import PreguntasPanel from "../components/coordinador/PreguntasPanel";
 import ReportesPanel from "../components/coordinador/ReportesCoorPanel";
 import ProyectosPanel from "../components/coordinador/ProyectosPanel";
+import TrabajadoresInfo from "../components/TrabajadoresInfo"; // 👈 Nuevo
 
 function CoordinadorView({ usuario }) {
   const [activeSection, setActiveSection] = useState("bienvenida");
@@ -10,7 +11,7 @@ function CoordinadorView({ usuario }) {
 
   const handleSectionChange = (section) => {
     setActiveSection(section);
-    setMenuOpen(false); // cerrar menú en móvil
+    setMenuOpen(false); 
   };
 
   const renderContent = () => {
@@ -23,6 +24,8 @@ function CoordinadorView({ usuario }) {
         return <PreguntasPanel />;
       case "reportes":
         return <ReportesPanel />;
+      case "servicios":
+        return <TrabajadoresInfo />; // 👈 Nuevo
       default:
         return (
           <div className="text-center mt-10">
@@ -78,11 +81,19 @@ function CoordinadorView({ usuario }) {
         >
           Reportes
         </button>
+      
+
+        <button
+          onClick={() => handleSectionChange("servicios")}
+          className={`text-left p-2 rounded mb-2 ${
+            activeSection === "servicios" ? "bg-cyan-800" : "hover:bg-cyan-700"
+          }`}
+        >
+          Servicios
+        </button>
       </aside>
 
-      {/* Contenido dinámico */}
       <main className="flex-1 p-6 md:ml-0 relative">
-        {/* Botón menú móvil */}
         <button
           className="md:hidden mb-4 bg-cyan-600 text-white px-4 py-2 rounded-lg"
           onClick={() => setMenuOpen(!menuOpen)}
@@ -97,4 +108,3 @@ function CoordinadorView({ usuario }) {
 }
 
 export default CoordinadorView;
-

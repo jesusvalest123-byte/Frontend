@@ -58,7 +58,7 @@ function ModificarActividad({ actividadEditar, onBack, onActualizado }) {
 
       if (res.status === 200) {
         setMensaje("✅ Actividad actualizada correctamente");
-        // Espera un poco antes de volver atrás
+       
         setTimeout(() => {
           if (onActualizado) onActualizado();
         }, 1500);

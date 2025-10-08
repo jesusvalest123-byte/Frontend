@@ -1,89 +1,47 @@
-import React, { useState } from "react";
-import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import React from "react";
 
-function Pregunta({ onClose, usuario }) {
-  const [pregunta, setPregunta] = useState("");
-  const [correo, setCorreo] = useState(usuario?.correo || "");
-  const [cargando, setCargando] = useState(false);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!pregunta || !correo) {
-      toast.error("Por favor completa todos los campos");
-      return;
-    }
-
-    setCargando(true);
-    try {
-      const body = {
-        pregunta: pregunta,
-        correocontacto: correo,
-      };
-
-      // Si el usuario está logueado, enviamos el idusuario
-      if (usuario?.idusuario) {
-        body.idusuario = usuario.idusuario;
-      }
-
-      await axios.post("http://localhost:8080/api/preguntas-enviadas", body);
-
-      toast.success("Pregunta enviada correctamente");
-      setPregunta("");
-      setCorreo(usuario?.correo || "");
-      setTimeout(() => {
-        if (onClose) onClose();
-      }, 1500);
-    } catch (error) {
-      console.error(error.response || error);
-      toast.error("Error al enviar la pregunta");
-    } finally {
-      setCargando(false);
-    }
-  };
+function Nosotros() {
+  const secciones = [
+    {
+      title: "Quiénes Somos",
+      description:
+        "Somos una empresa de software dedicada a ofrecer soluciones innovadoras que generan valor para nuestros clientes. Estamos comprometidos con la excelencia, la creatividad y la transformación digital.",
+    },
+    {
+      title: "Misión",
+      description:
+        "Nuestra misión es desarrollar soluciones de software a medida que optimicen procesos, mejoren la experiencia del usuario y contribuyan al crecimiento sostenible de las organizaciones.",
+    },
+    {
+      title: "Visión",
+      description:
+        "Ser reconocidos como líderes en innovación tecnológica, ofreciendo productos y servicios que impulsen la transformación digital de empresas a nivel nacional e internacional.",
+    },
+  ];
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start pt-20 z-50">
-      <ToastContainer />
-      <div className="bg-white p-6 rounded shadow-md w-full max-w-md relative">
-        <h2 className="text-xl font-bold mb-4">Enviar una pregunta</h2>
-        <form onSubmit={handleSubmit} className="space-y-3">
-          <textarea
-            placeholder="Escribe tu pregunta"
-            value={pregunta}
-            onChange={(e) => setPregunta(e.target.value)}
-            className="w-full p-2 border rounded"
-            required
-          />
-          <input
-            type="email"
-            placeholder="Tu correo"
-            value={correo}
-            onChange={(e) => setCorreo(e.target.value)}
-            className="w-full p-2 border rounded"
-            required
-          />
-          <div className="flex justify-end gap-2 mt-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-            >
-              Cancelar
-            </button>
-            <button
-              type="submit"
-              disabled={cargando}
-              className="bg-cyan-500 text-white px-4 py-2 rounded hover:bg-cyan-600"
-            >
-              {cargando ? "Enviando..." : "Enviar"}
-            </button>
+    <div className="bg-gray-50 min-h-screen p-6 sm:p-8 md:p-12 flex flex-col items-center">
+      <h1 className="text-3xl sm:text-4xl font-bold text-cyan-500 text-center mb-10 sm:mb-12">
+        Nosotros
+      </h1>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 w-full max-w-6xl">
+        {secciones.map((seccion, idx) => (
+          <div
+            key={idx}
+            className="bg-white rounded-xl shadow-md p-6 hover:shadow-xl transition flex flex-col"
+          >
+            <h2 className="text-xl sm:text-2xl font-bold text-cyan-500 mb-3 sm:mb-4 text-center sm:text-left">
+              {seccion.title}
+            </h2>
+            <p className="text-gray-700 text-sm sm:text-base leading-relaxed text-center sm:text-justify">
+              {seccion.description}
+            </p>
           </div>
-        </form>
+        ))}
       </div>
     </div>
   );
 }
 
-export default Pregunta;
+export default Nosotros;

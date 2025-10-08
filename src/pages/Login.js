@@ -28,7 +28,7 @@ function Login({ onLogin }) {
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Correo */}
+
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Correo
@@ -43,7 +43,7 @@ function Login({ onLogin }) {
             />
           </div>
 
-          {/* Contraseña */}
+
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Contraseña
@@ -58,10 +58,8 @@ function Login({ onLogin }) {
             />
           </div>
 
-          {/* Error */}
           {error && <p className="text-red-500 text-sm">{error}</p>}
 
-          {/* Botón */}
           <button
             type="submit"
             className="w-full bg-cyan-500 text-white py-2 rounded-lg font-bold hover:bg-cyan-600 transition"

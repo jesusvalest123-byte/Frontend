@@ -27,7 +27,7 @@ function LoginModal({ onLogin, onClose }) {
       if (data.idRol === 2) role = "lider";
       if (data.idRol === 3) role = "desarrollador";
 
-      // Mandamos objeto completo para no perder info
+      
       onLogin({ role, idusuario: data.idusuario, nombre: data.nombre, correo: data.correo });
       onClose();
     } catch (err) {

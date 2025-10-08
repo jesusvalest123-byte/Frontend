@@ -20,7 +20,7 @@ function Pregunta({ onClose }) {
       await axios.post("http://localhost:8080/api/preguntas-enviadas", {
         pregunta: pregunta,
         correocontacto: correo,
-        // No enviamos fecha ni idusuario si es público
+  
       });
       toast.success("Pregunta enviada correctamente");
       setPregunta("");

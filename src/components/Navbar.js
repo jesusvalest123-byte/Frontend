@@ -9,7 +9,7 @@ function Navbar({ userRole, onLoginClick, onLogoutClick, onPreguntaClick }) {
         <img src="/assets/logo.png" alt="Logo" className="h-16" />
       </div>
 
-      {/* Links de navegación (solo si no hay sesión) */}
+
       {!userRole && (
         <nav className="flex gap-6">
           <Link to="/" className="text-white font-bold hover:text-gray-800">
@@ -24,7 +24,7 @@ function Navbar({ userRole, onLoginClick, onLogoutClick, onPreguntaClick }) {
         </nav>
       )}
 
-      {/* Botones de sesión y Pregunta */}
+
       <div className="flex gap-2 items-center">
 
         {!userRole ? (

@@ -10,6 +10,10 @@ function CrearInterrupcion({ etapa, usuario, onBack, onCreado }) {
   const [duracion, setDuracion] = useState("");
   const [cargando, setCargando] = useState(false);
 
+  const hoy = new Date().toISOString().split("T")[0]; // Fecha actual
+  const fechaInicio = etapa.fechaInicio;
+  const fechaFinal = etapa.fechaFinal;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setCargando(true);
@@ -26,7 +30,10 @@ function CrearInterrupcion({ etapa, usuario, onBack, onCreado }) {
       setTimeout(onCreado, 1000);
     } catch (err) {
       console.error(err);
-      toast.error("❌ Error al crear la interrupción");
+      toast.error(
+        err.response?.data?.message ||
+          "❌ Error al crear la interrupción. Verifique la fecha y los datos."
+      );
     } finally {
       setCargando(false);
     }
@@ -58,6 +65,8 @@ function CrearInterrupcion({ etapa, usuario, onBack, onCreado }) {
           onChange={(e) => setFecha(e.target.value)}
           className="w-full p-2 border rounded"
           required
+          min={fechaInicio} // ✅ No puede ser antes del inicio de la etapa
+          max={hoy < fechaFinal ? hoy : fechaFinal} // ✅ No puede ser después de hoy ni del fin de la etapa
         />
         <input
           type="number"

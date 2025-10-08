@@ -15,7 +15,7 @@ function ReportesLiderPanel({ onBack }) {
   const API_URL = "http://localhost:8080/api/reportes";
   const API_PROYECTOS = "http://localhost:8080/api/proyectos";
 
-  // 🔹 Cargar proyectos
+ 
   useEffect(() => {
     const fetchProyectos = async () => {
       try {
@@ -29,7 +29,7 @@ function ReportesLiderPanel({ onBack }) {
     fetchProyectos();
   }, []);
 
-  // 🔹 Actividades por proyecto
+ 
   const obtenerReporteActividades = async () => {
     if (!proyectoSeleccionado) {
       alert("Selecciona un proyecto");
@@ -47,7 +47,7 @@ function ReportesLiderPanel({ onBack }) {
     }
   };
 
-  // 🔹 Interrupciones por proyecto
+  
   const obtenerReporteInterrupciones = async () => {
     if (!proyectoSeleccionado) {
       alert("Selecciona un proyecto");
@@ -65,7 +65,7 @@ function ReportesLiderPanel({ onBack }) {
     }
   };
 
-  // 🔹 Reporte general (todos los proyectos)
+ 
   const obtenerReporteGeneral = async () => {
     setTipoReporte("general");
     try {
@@ -79,7 +79,7 @@ function ReportesLiderPanel({ onBack }) {
     }
   };
 
-  // 🔹 Exportar Excel
+
   const exportarExcel = () => {
     let datos = [];
     let nombreArchivo = "";
@@ -114,7 +114,7 @@ function ReportesLiderPanel({ onBack }) {
     XLSX.writeFile(libro, nombreArchivo);
   };
 
-  // 🔹 Exportar PDF
+
 const exportarPDF = () => {
   const doc = new jsPDF();
 

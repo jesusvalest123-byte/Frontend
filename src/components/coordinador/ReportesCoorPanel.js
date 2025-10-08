@@ -2,100 +2,102 @@ import React, { useState } from "react";
 import axios from "axios";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable"; // Import correcto para evitar error autoTable
+import autoTable from "jspdf-autotable"; 
 
-function ReportesLiderPanel() {
-  const [idProyecto, setIdProyecto] = useState("");
-  const [idLider, setIdLider] = useState("");
+function ReportesCoorPanel() {
+  const [idUsuario, setIdUsuario] = useState("");
+  const [reporteDesempeno, setReporteDesempeno] = useState([]);
   const [reporteActividades, setReporteActividades] = useState([]);
-  const [reporteInterrupciones, setReporteInterrupciones] = useState([]);
-  const [reporteResumen, setReporteResumen] = useState([]);
   const [tipoReporte, setTipoReporte] = useState("");
 
   const API_URL = "http://localhost:8080/api/reportes";
+  const API_USUARIOS = "http://localhost:8080/api/usuarios";
 
-  // 🔹 Obtener actividades por proyecto
-  const obtenerActividadesProyecto = async () => {
-    if (!idProyecto) {
-      alert("Debes ingresar el ID del proyecto");
-      return;
-    }
+
+  const obtenerNombreDesarrollador = async (id) => {
+    if (!id) return "Todos los desarrolladores";
     try {
-      const resp = await axios.get(`${API_URL}/proyecto/${idProyecto}/actividades`);
-      setReporteActividades(resp.data);
-      setReporteInterrupciones([]);
-      setReporteResumen([]);
-      setTipoReporte("actividades");
-    } catch (error) {
-      console.error(error);
-      alert("Error al obtener actividades del proyecto");
+      const resp = await axios.get(`${API_USUARIOS}/${id}`);
+      return resp.data.nombre;
+    } catch {
+      return "Desarrollador no encontrado";
     }
   };
 
-  // 🔹 Obtener interrupciones por proyecto
-  const obtenerInterrupcionesProyecto = async () => {
-    if (!idProyecto) {
-      alert("Debes ingresar el ID del proyecto");
-      return;
-    }
-    try {
-      const resp = await axios.get(`${API_URL}/proyecto/${idProyecto}/interrupciones`);
-      setReporteInterrupciones([{ idProyecto, duracion: resp.data }]);
-      setReporteActividades([]);
-      setReporteResumen([]);
-      setTipoReporte("interrupciones");
-    } catch (error) {
-      console.error(error);
-      alert("Error al obtener interrupciones del proyecto");
-    }
-  };
-
-  // 🔹 Obtener resumen de proyectos del líder
-  const obtenerResumenProyectos = async () => {
-    if (!idLider) {
-      alert("Debes ingresar el ID del líder");
-      return;
-    }
-    try {
-      const resp = await axios.get(`${API_URL}/general/${idLider}`);
-      setReporteResumen(resp.data);
-      setReporteActividades([]);
-      setReporteInterrupciones([]);
-      setTipoReporte("resumen");
-    } catch (error) {
-      console.error(error);
-      alert("Error al obtener resumen de proyectos");
+  
+  const obtenerDesempeno = async () => {
+    setTipoReporte("desempeno");
+    if (!idUsuario) {
+      
+      try {
+        const resp = await axios.get(`${API_URL}/desempeno`);
+        setReporteDesempeno(resp.data);
+        setReporteActividades([]);
+      } catch (error) {
+        console.error(error);
+        alert("Error al obtener desempeño de todos los desarrolladores.");
+      }
+    } else {
+    
+      const nombre = await obtenerNombreDesarrollador(idUsuario);
+      try {
+        const resp = await axios.get(`${API_URL}/desempeno/${idUsuario}`);
+        setReporteDesempeno([{ id: idUsuario, nombre, porcentaje: resp.data }]);
+        setReporteActividades([]);
+      } catch {
+        alert("Error al obtener desempeño del desarrollador.");
+      }
     }
   };
 
-  // 🔹 Exportar Excel
+  
+  const obtenerActividades = async () => {
+    setTipoReporte("actividades");
+    if (!idUsuario) {
+   
+      try {
+        const resp = await axios.get(`${API_URL}/actividades`);
+        setReporteActividades(resp.data);
+        setReporteDesempeno([]);
+      } catch (error) {
+        console.error(error);
+        alert("Error al obtener actividades de todos los desarrolladores.");
+      }
+    } else {
+      
+      try {
+        const resp = await axios.get(`${API_URL}/actividades/usuario/${idUsuario}`);
+        setReporteActividades(resp.data);
+        setReporteDesempeno([]);
+      } catch (error) {
+        console.error(error);
+        alert("Error al obtener actividades del desarrollador.");
+      }
+    }
+  };
+
+
   const exportarExcel = () => {
     let datos = [];
     let nombreArchivo = "";
 
-    if (tipoReporte === "actividades") {
+    if (tipoReporte === "desempeno") {
+      datos = reporteDesempeno.map((d) => ({
+        ID: d.id,
+        Desarrollador: d.nombre,
+        "Porcentaje de Desempeño": `${d.porcentaje}%`,
+      }));
+      nombreArchivo = "reporte_desempeno.xlsx";
+    } else if (tipoReporte === "actividades") {
       datos = reporteActividades.map((a) => ({
+        "ID Proyecto": a.idProyecto,
+        "Nombre Proyecto": a.nombreProyecto,
         "ID Actividad": a.idActividad,
         "Nombre Actividad": a.nombreActividad,
-        "Descripción": a.descripcion,
-        "Nombre Proyecto": a.nombreProyecto,
-        "Desarrollador": a.nombreDesarrollador,
+        Descripción: a.descripcion,
+        Desarrollador: a.nombreDesarrollador,
       }));
       nombreArchivo = "reporte_actividades.xlsx";
-    } else if (tipoReporte === "interrupciones") {
-      datos = reporteInterrupciones.map((i) => ({
-        "ID Proyecto": i.idProyecto,
-        "Duración Total Interrupciones": i.duracion,
-      }));
-      nombreArchivo = "reporte_interrupciones.xlsx";
-    } else if (tipoReporte === "resumen") {
-      datos = reporteResumen.map((r) => ({
-        "ID Proyecto": r.idProyecto,
-        "Nombre Proyecto": r.nombreProyecto,
-        "Estado": r.estado,
-        "Avance": r.avance,
-      }));
-      nombreArchivo = "resumen_proyectos.xlsx";
     }
 
     const hoja = XLSX.utils.json_to_sheet(datos);
@@ -104,153 +106,108 @@ function ReportesLiderPanel() {
     XLSX.writeFile(libro, nombreArchivo);
   };
 
-  // 🔹 Exportar PDF
+ 
   const exportarPDF = () => {
     const doc = new jsPDF();
-
-    if (tipoReporte === "actividades") {
-      doc.text("Reporte de Actividades por Proyecto", 14, 15);
+    if (tipoReporte === "desempeno") {
+      doc.text("Reporte de Desempeño", 14, 15);
       autoTable(doc, {
         startY: 25,
-        head: [["ID Actividad", "Nombre Actividad", "Descripción", "Nombre Proyecto", "Desarrollador"]],
+        head: [["ID", "Desarrollador", "Porcentaje de Desempeño"]],
+        body: reporteDesempeno.map((d) => [d.id, d.nombre, `${d.porcentaje}%`]),
+      });
+      doc.save("reporte_desempeno.pdf");
+    } else if (tipoReporte === "actividades") {
+      doc.text("Reporte de Actividades", 14, 15);
+      autoTable(doc, {
+        startY: 25,
+        head: [["ID Proyecto", "Nombre Proyecto", "ID Actividad", "Nombre Actividad", "Descripción", "Desarrollador"]],
         body: reporteActividades.map((a) => [
+          a.idProyecto,
+          a.nombreProyecto,
           a.idActividad,
           a.nombreActividad,
           a.descripcion,
-          a.nombreProyecto,
           a.nombreDesarrollador,
         ]),
       });
       doc.save("reporte_actividades.pdf");
-    } else if (tipoReporte === "interrupciones") {
-      doc.text("Reporte de Interrupciones por Proyecto", 14, 15);
-      autoTable(doc, {
-        startY: 25,
-        head: [["ID Proyecto", "Duración Total Interrupciones"]],
-        body: reporteInterrupciones.map((i) => [i.idProyecto, i.duracion]),
-      });
-      doc.save("reporte_interrupciones.pdf");
-    } else if (tipoReporte === "resumen") {
-      doc.text("Resumen de Proyectos", 14, 15);
-      autoTable(doc, {
-        startY: 25,
-        head: [["ID Proyecto", "Nombre Proyecto", "Estado", "Avance"]],
-        body: reporteResumen.map((r) => [r.idProyecto, r.nombreProyecto, r.estado, r.avance]),
-      });
-      doc.save("resumen_proyectos.pdf");
     }
   };
 
   return (
     <div className="p-6 bg-gray-50 rounded-2xl shadow-lg max-w-4xl mx-auto">
       <h2 className="text-2xl font-bold text-center mb-4 text-gray-800">
-        Reportes del Líder
+        Reportes del Coordinador
       </h2>
 
       <div className="flex flex-col sm:flex-row gap-4 mb-6 justify-center">
         <input
           type="number"
-          placeholder="ID Proyecto"
-          value={idProyecto}
-          onChange={(e) => setIdProyecto(e.target.value)}
+          placeholder="ID del Desarrollador (opcional)"
+          value={idUsuario}
+          onChange={(e) => setIdUsuario(e.target.value)}
           className="border border-gray-300 rounded-lg p-2 w-full sm:w-1/2"
         />
-        <input
-          type="number"
-          placeholder="ID Líder (para resumen)"
-          value={idLider}
-          onChange={(e) => setIdLider(e.target.value)}
-          className="border border-gray-300 rounded-lg p-2 w-full sm:w-1/2"
-        />
-      </div>
-
-      <div className="flex flex-col sm:flex-row gap-4 mb-6 justify-center">
         <button
-          onClick={obtenerActividadesProyecto}
+          onClick={obtenerDesempeno}
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+        >
+          Ver Desempeño
+        </button>
+        <button
+          onClick={obtenerActividades}
           className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
         >
           Ver Actividades
         </button>
-        <button
-          onClick={obtenerInterrupcionesProyecto}
-          className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
-        >
-          Ver Interrupciones
-        </button>
-        <button
-          onClick={obtenerResumenProyectos}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-        >
-          Ver Resumen Proyectos
-        </button>
       </div>
+
+      {tipoReporte === "desempeno" && (
+        <div className="overflow-x-auto bg-white rounded-lg shadow p-4">
+          <table className="min-w-full text-center">
+            <thead className="bg-gray-200">
+              <tr>
+                <th className="py-2 px-4">ID</th>
+                <th className="py-2 px-4">Desarrollador</th>
+                <th className="py-2 px-4">Porcentaje de Desempeño</th>
+              </tr>
+            </thead>
+            <tbody>
+              {reporteDesempeno.map((d, i) => (
+                <tr key={i} className="border-t">
+                  <td className="py-2 px-4">{d.id}</td>
+                  <td className="py-2 px-4">{d.nombre}</td>
+                  <td className="py-2 px-4">{d.porcentaje}%</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {tipoReporte === "actividades" && (
         <div className="overflow-x-auto bg-white rounded-lg shadow p-4">
           <table className="min-w-full text-center">
             <thead className="bg-gray-200">
               <tr>
+                <th className="py-2 px-4">ID Proyecto</th>
+                <th className="py-2 px-4">Nombre Proyecto</th>
                 <th className="py-2 px-4">ID Actividad</th>
                 <th className="py-2 px-4">Nombre Actividad</th>
                 <th className="py-2 px-4">Descripción</th>
-                <th className="py-2 px-4">Nombre Proyecto</th>
                 <th className="py-2 px-4">Desarrollador</th>
               </tr>
             </thead>
             <tbody>
               {reporteActividades.map((a, i) => (
                 <tr key={i} className="border-t">
+                  <td className="py-2 px-4">{a.idProyecto}</td>
+                  <td className="py-2 px-4">{a.nombreProyecto}</td>
                   <td className="py-2 px-4">{a.idActividad}</td>
                   <td className="py-2 px-4">{a.nombreActividad}</td>
                   <td className="py-2 px-4">{a.descripcion}</td>
-                  <td className="py-2 px-4">{a.nombreProyecto}</td>
                   <td className="py-2 px-4">{a.nombreDesarrollador}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {tipoReporte === "interrupciones" && (
-        <div className="overflow-x-auto bg-white rounded-lg shadow p-4">
-          <table className="min-w-full text-center">
-            <thead className="bg-gray-200">
-              <tr>
-                <th className="py-2 px-4">ID Proyecto</th>
-                <th className="py-2 px-4">Duración Total Interrupciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {reporteInterrupciones.map((i, idx) => (
-                <tr key={idx} className="border-t">
-                  <td className="py-2 px-4">{i.idProyecto}</td>
-                  <td className="py-2 px-4">{i.duracion}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {tipoReporte === "resumen" && (
-        <div className="overflow-x-auto bg-white rounded-lg shadow p-4">
-          <table className="min-w-full text-center">
-            <thead className="bg-gray-200">
-              <tr>
-                <th className="py-2 px-4">ID Proyecto</th>
-                <th className="py-2 px-4">Nombre Proyecto</th>
-                <th className="py-2 px-4">Estado</th>
-                <th className="py-2 px-4">Avance</th>
-              </tr>
-            </thead>
-            <tbody>
-              {reporteResumen.map((r, idx) => (
-                <tr key={idx} className="border-t">
-                  <td className="py-2 px-4">{r.idProyecto}</td>
-                  <td className="py-2 px-4">{r.nombreProyecto}</td>
-                  <td className="py-2 px-4">{r.estado}</td>
-                  <td className="py-2 px-4">{r.avance}</td>
                 </tr>
               ))}
             </tbody>
@@ -278,4 +235,6 @@ function ReportesLiderPanel() {
   );
 }
 
-export default ReportesLiderPanel;
+export default ReportesCoorPanel;
+
+	

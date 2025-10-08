@@ -4,20 +4,20 @@ import { Link } from "react-router-dom";
 function Home() {
   return (
     <div className="bg-gray-50 min-h-screen p-6 sm:p-8 flex flex-col items-center">
-      {/* Título */}
+     
       <h1 className="text-3xl sm:text-4xl font-bold text-cyan-500 mb-8 sm:mb-12 text-center">
         Bienvenido a Ikernell
       </h1>
 
-      {/* Texto introductorio */}
+
       <p className="text-gray-700 text-base sm:text-lg max-w-2xl text-center mb-10 sm:mb-12 px-2">
         Explora nuestras soluciones y conoce más sobre nuestra empresa. 
         Aquí encontrarás información sobre nuestra misión, visión y los servicios que ofrecemos.
       </p>
 
-      {/* Cuadros de Nosotros y Servicios */}
+
       <div className="flex flex-col sm:flex-row gap-6 sm:gap-8 w-full justify-center">
-        {/* Cuadro de Nosotros */}
+      
         <div className="bg-white shadow-lg rounded-xl p-6 sm:p-8 w-full sm:w-72 flex flex-col items-center">
           <img 
             src="/assets/nosotros.png" 
@@ -35,7 +35,7 @@ function Home() {
           </Link>
         </div>
 
-        {/* Cuadro de Servicios */}
+     
         <div className="bg-white shadow-lg rounded-xl p-6 sm:p-8 w-full sm:w-72 flex flex-col items-center">
           <img 
             src="/assets/servicios.png" 
@@ -54,7 +54,7 @@ function Home() {
         </div>
       </div>
 
-      {/* Testimonios */}
+
       <div className="mt-12 sm:mt-16 w-full max-w-5xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 px-2">
         <div className="bg-white p-6 rounded-xl shadow-md flex flex-col items-center text-center">
           <img src="/assets/testimonio1.png" alt="Cliente 1" className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-lg mb-4"/>
