@@ -3,13 +3,10 @@ import axios from "axios";
 
 function ListaProyectosActividades() {
   const [proyectos, setProyectos] = useState([]);
-  const [etapas, setEtapas] = useState([]);
-  const [actividades, setActividades] = useState([]);
-  const [proyectoSeleccionado, setProyectoSeleccionado] = useState(null);
-  const [etapaSeleccionada, setEtapaSeleccionada] = useState(null);
+  const [etapasPorProyecto, setEtapasPorProyecto] = useState({});
+  const [actividadesPorEtapa, setActividadesPorEtapa] = useState({});
   const [usuarios, setUsuarios] = useState([]);
 
- 
   useEffect(() => {
     axios
       .get("http://localhost:8080/api/proyectos")
@@ -22,22 +19,37 @@ function ListaProyectosActividades() {
       .catch((err) => console.error("Error al obtener usuarios:", err));
   }, []);
 
-  const fetchEtapas = (idProyecto) => {
-    setProyectoSeleccionado(idProyecto);
-    axios
-      .get(`http://localhost:8080/api/etapas?proyectoId=${idProyecto}`)
-      .then((res) => setEtapas(res.data))
-      .catch((err) => console.error("Error al obtener etapas:", err));
-    setActividades([]);
-    setEtapaSeleccionada(null);
+  const toggleEtapas = (proyectoId) => {
+    if (etapasPorProyecto[proyectoId]) {
+      // Si ya están cargadas, colapsar
+      setEtapasPorProyecto((prev) => ({ ...prev, [proyectoId]: null }));
+      setActividadesPorEtapa((prev) => ({ ...prev })); // limpiar actividades
+    } else {
+      // Cargar etapas del proyecto
+      axios
+        .get(`http://localhost:8080/api/etapas/by-proyecto/${proyectoId}`)
+        .then((res) =>
+          setEtapasPorProyecto((prev) => ({ ...prev, [proyectoId]: res.data }))
+        )
+        .catch(() => setEtapasPorProyecto((prev) => ({ ...prev, [proyectoId]: [] })));
+    }
   };
 
-  const fetchActividades = (etapa) => {
-    setEtapaSeleccionada(etapa.idEtapa);
-    axios
-      .get(`http://localhost:8080/api/actividades?etapaId=${etapa.idEtapa}`)
-      .then((res) => setActividades(res.data))
-      .catch((err) => console.error("Error al obtener actividades:", err));
+  const toggleActividades = (etapa) => {
+    if (actividadesPorEtapa[etapa.idEtapa]) {
+      // Colapsar
+      setActividadesPorEtapa((prev) => ({ ...prev, [etapa.idEtapa]: null }));
+    } else {
+      // Cargar actividades de la etapa
+      axios
+        .get(`http://localhost:8080/api/actividades?etapaId=${etapa.idEtapa}`)
+        .then((res) =>
+          setActividadesPorEtapa((prev) => ({ ...prev, [etapa.idEtapa]: res.data }))
+        )
+        .catch(() =>
+          setActividadesPorEtapa((prev) => ({ ...prev, [etapa.idEtapa]: [] }))
+        );
+    }
   };
 
   const getNombreDesarrollador = (idDesarrollador) => {
@@ -46,150 +58,84 @@ function ListaProyectosActividades() {
   };
 
   return (
-    <div className="p-6 bg-white rounded shadow max-w-6xl mx-auto">
-      <h2 className="text-2xl font-bold text-blue-600 mb-6 text-center">
+    <div className="max-w-6xl mx-auto p-6">
+      <h2 className="text-3xl font-bold text-blue-600 mb-6 text-center">
         Proyectos y Etapas
       </h2>
 
-      
-      <table className="w-full border border-gray-300 rounded-lg shadow mb-6">
-        <thead>
-          <tr className="bg-gray-100 text-left">
-            <th className="p-3 border">ID</th>
-            <th className="p-3 border">Nombre del Proyecto</th>
-            <th className="p-3 border">Descripción</th>
-            <th className="p-3 border">Fecha Inicio</th>
-            <th className="p-3 border">Fecha Final</th>
-            <th className="p-3 border text-center">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {proyectos.length > 0 ? (
-            proyectos.map((proyecto) => (
-              <tr
-                key={proyecto.id}
-                className={`hover:bg-gray-50 ${
-                  proyectoSeleccionado === proyecto.id ? "bg-gray-100" : ""
-                }`}
-              >
-                <td className="p-3 border">{proyecto.id}</td>
-                <td className="p-3 border">{proyecto.nombreproyecto}</td>
-                <td className="p-3 border">{proyecto.descripcion}</td>
-                <td className="p-3 border">
-                  {proyecto.fechainicio
-                    ? new Date(proyecto.fechainicio).toLocaleDateString()
-                    : "—"}
-                </td>
-                <td className="p-3 border">
-                  {proyecto.fechafinal
-                    ? new Date(proyecto.fechafinal).toLocaleDateString()
-                    : "—"}
-                </td>
-                <td className="p-3 border text-center">
-                  <button
-                    onClick={() => fetchEtapas(proyecto.id)}
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+      <div className="space-y-4">
+        {proyectos.map((proyecto) => (
+          <div
+            key={proyecto.id}
+            className="border rounded-lg shadow hover:shadow-lg transition-shadow"
+          >
+            {/* Proyecto */}
+            <div
+              className="flex justify-between items-center p-4 bg-blue-100 cursor-pointer"
+              onClick={() => toggleEtapas(proyecto.id)}
+            >
+              <div>
+                <h3 className="text-xl font-semibold">{proyecto.nombreproyecto}</h3>
+                <p className="text-gray-700">{proyecto.descripcion}</p>
+              </div>
+              <span className="text-2xl">{etapasPorProyecto[proyecto.id] ? "−" : "+"}</span>
+            </div>
+
+            {/* Etapas */}
+            {etapasPorProyecto[proyecto.id] &&
+              etapasPorProyecto[proyecto.id].map((etapa) => (
+                <div
+                  key={etapa.idEtapa}
+                  className="border-t border-gray-200 pl-6 pr-4 py-2"
+                >
+                  <div
+                    className="flex justify-between items-center p-2 bg-blue-50 cursor-pointer rounded"
+                    onClick={() => toggleActividades(etapa)}
                   >
-                    📋 Ver Etapas
-                  </button>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="6" className="text-center py-4 text-gray-500 border">
-                No hay proyectos registrados.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+                    <div>
+                      <h4 className="font-medium">{etapa.nombreEtapa}</h4>
+                      <p className="text-gray-600">{etapa.descripcion}</p>
+                    </div>
+                    <span className="text-xl">
+                      {actividadesPorEtapa[etapa.idEtapa] ? "−" : "+"}
+                    </span>
+                  </div>
 
-     
-      {etapas.length > 0 && (
-        <div>
-          <h3 className="text-xl font-semibold text-blue-600 mb-4 text-center">
-            Etapas del Proyecto Seleccionado
-          </h3>
-          <table className="w-full border border-gray-300 rounded-lg shadow mb-6">
-            <thead>
-              <tr className="bg-gray-100 text-left">
-                <th className="p-3 border">ID</th>
-                <th className="p-3 border">Nombre de la Etapa</th>
-                <th className="p-3 border">Descripción</th>
-                <th className="p-3 border">Fecha Inicio</th>
-                <th className="p-3 border">Fecha Final</th>
-                <th className="p-3 border text-center">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {etapas.map((etapa) => (
-                <tr key={etapa.idEtapa} className="hover:bg-gray-50">
-                  <td className="p-3 border">{etapa.idEtapa}</td>
-                  <td className="p-3 border">{etapa.nombreEtapa}</td>
-                  <td className="p-3 border">{etapa.descripcion}</td>
-                  <td className="p-3 border">
-                    {etapa.fechaInicio
-                      ? new Date(etapa.fechaInicio).toLocaleDateString()
-                      : "—"}
-                  </td>
-                  <td className="p-3 border">
-                    {etapa.fechaFinal
-                      ? new Date(etapa.fechaFinal).toLocaleDateString()
-                      : "—"}
-                  </td>
-                  <td className="p-3 border text-center">
-                    <button
-                      onClick={() => fetchActividades(etapa)}
-                      className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                    >
-                      ⚙️ Ver Actividades
-                    </button>
-                  </td>
-                </tr>
+                  {/* Actividades */}
+                  {actividadesPorEtapa[etapa.idEtapa] &&
+                    actividadesPorEtapa[etapa.idEtapa].map((act) => (
+                      <div
+                        key={act.idActividad}
+                        className="pl-4 mt-2 p-2 border-l border-gray-300 bg-gray-50 rounded"
+                      >
+                        <p>
+                          <strong>Nombre:</strong> {act.nombreActividad}
+                        </p>
+                        <p>
+                          <strong>Descripción:</strong> {act.descripcion}
+                        </p>
+                        <p>
+                          <strong>Estado:</strong> {act.estado}
+                        </p>
+                        <p>
+                          <strong>Desarrollador:</strong>{" "}
+                          {getNombreDesarrollador(act.idDesarrollador)}
+                        </p>
+                      </div>
+                    ))}
+                  {actividadesPorEtapa[etapa.idEtapa] &&
+                    actividadesPorEtapa[etapa.idEtapa].length === 0 && (
+                      <p className="text-gray-500 pl-4 py-2">No hay actividades.</p>
+                    )}
+                </div>
               ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
- 
-      {actividades.length > 0 && (
-        <div>
-          <h3 className="text-xl font-semibold text-blue-600 mb-4 text-center">
-            Actividades de la Etapa Seleccionada
-          </h3>
-          <table className="w-full border border-gray-300 rounded-lg shadow">
-            <thead>
-              <tr className="bg-gray-100 text-left">
-                <th className="p-3 border">ID</th>
-                <th className="p-3 border">Nombre</th>
-                <th className="p-3 border">Descripción</th>
-                <th className="p-3 border">Estado</th>
-                <th className="p-3 border">Desarrollador</th>
-              </tr>
-            </thead>
-            <tbody>
-              {actividades.map((act) => (
-                <tr key={act.idActividad} className="hover:bg-gray-50">
-                  <td className="p-3 border">{act.idActividad}</td>
-                  <td className="p-3 border">{act.nombreActividad}</td>
-                  <td className="p-3 border">{act.descripcion}</td>
-                  <td className="p-3 border">{act.estado}</td>
-                  <td className="p-3 border">
-                    {getNombreDesarrollador(act.idDesarrollador)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {actividades.length === 0 && (
-            <p className="text-center py-4 text-gray-500">
-              No hay actividades registradas.
-            </p>
-          )}
-        </div>
-      )}
+            {etapasPorProyecto[proyecto.id] &&
+              etapasPorProyecto[proyecto.id].length === 0 && (
+                <p className="text-gray-500 p-4">No hay etapas.</p>
+              )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

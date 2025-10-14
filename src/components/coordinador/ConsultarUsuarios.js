@@ -1,39 +1,54 @@
 import React, { useState, useEffect } from "react";
+import { toast } from "react-toastify"; // 👈 Importa toast
 
 function ConsultarUsuarios({ onBack, onModificar, onEliminar }) {
   const [usuarios, setUsuarios] = useState([]);
-  const [busquedaId, setBusquedaId] = useState("");
+  const [busquedaIdentificacion, setBusquedaIdentificacion] = useState("");
   const [resultado, setResultado] = useState(null);
+  const [cargando, setCargando] = useState(false);
 
- 
+  // Cargar todos los usuarios al montar el componente
   useEffect(() => {
     fetch("http://localhost:8080/api/usuarios")
       .then((res) => res.json())
       .then((data) => setUsuarios(data))
-      .catch((err) => console.error("Error cargando usuarios:", err));
+      .catch((err) => {
+        console.error("Error cargando usuarios:", err);
+        toast.error("❌ Error al cargar los usuarios");
+      });
   }, []);
 
+  // Buscar usuario por identificación
   const handleBuscar = () => {
-    if (busquedaId.trim() === "") {
+    if (busquedaIdentificacion.trim() === "") {
+      toast.warning("⚠️ Ingrese una identificación para buscar");
       setResultado(null);
       return;
     }
 
-    fetch(`http://localhost:8080/api/usuarios/${busquedaId}`)
+    setCargando(true);
+    fetch(`http://localhost:8080/api/usuarios/buscar/${busquedaIdentificacion}`)
       .then((res) => {
+        setCargando(false);
         if (!res.ok) throw new Error("Usuario no encontrado");
         return res.json();
       })
-      .then((data) => setResultado(data))
+      .then((data) => {
+        setResultado(data);
+        toast.success("✅ Usuario encontrado");
+      })
       .catch(() => {
-        alert("❌ Usuario no encontrado");
+        setCargando(false);
+        toast.error("❌ Usuario no encontrado");
         setResultado(null);
       });
   };
 
-  
+  // Función para obtener la URL completa de la foto
   const obtenerUrlFoto = (fotoLink) => {
-    return fotoLink ? `http://localhost:8080${fotoLink}` : "https://via.placeholder.com/150";
+    return fotoLink
+      ? `http://localhost:8080${fotoLink}`
+      : "https://via.placeholder.com/150";
   };
 
   return (
@@ -42,13 +57,13 @@ function ConsultarUsuarios({ onBack, onModificar, onEliminar }) {
         Consultar Usuarios
       </h2>
 
-    
+      {/* Formulario de búsqueda */}
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <input
           type="number"
-          placeholder="Ingrese ID del usuario"
-          value={busquedaId}
-          onChange={(e) => setBusquedaId(e.target.value)}
+          placeholder="Ingrese la identificación del usuario"
+          value={busquedaIdentificacion}
+          onChange={(e) => setBusquedaIdentificacion(e.target.value)}
           className="border p-3 rounded flex-1 focus:ring-2 focus:ring-blue-500"
         />
         <button
@@ -59,6 +74,14 @@ function ConsultarUsuarios({ onBack, onModificar, onEliminar }) {
         </button>
       </div>
 
+      {/* Mensaje de carga */}
+      {cargando && (
+        <p className="text-center text-gray-500 mb-4">
+          🔍 Buscando usuario...
+        </p>
+      )}
+
+      {/* Mostrar un usuario por identificación */}
       {resultado ? (
         <div className="overflow-x-auto">
           <div className="flex justify-center mb-4">
@@ -78,7 +101,12 @@ function ConsultarUsuarios({ onBack, onModificar, onEliminar }) {
             </thead>
             <tbody>
               {Object.entries(resultado)
-                .filter(([key]) => key !== "contrasena" && key !== "foto")
+                .filter(
+                  ([key]) =>
+                    key !== "contrasena" &&
+                    key !== "foto" &&
+                    key !== "idusuario"
+                )
                 .map(([key, value]) => (
                   <tr key={key} className="hover:bg-gray-50">
                     <td className="p-3 border font-bold capitalize">{key}</td>
@@ -115,12 +143,12 @@ function ConsultarUsuarios({ onBack, onModificar, onEliminar }) {
         </div>
       ) : (
         <>
-          
+          {/* Mostrar todos los usuarios */}
           <div className="overflow-x-auto">
             <table className="w-full border border-gray-300 rounded-lg">
               <thead>
                 <tr className="bg-gray-100 text-left">
-                  <th className="p-3 border">ID</th>
+                  <th className="p-3 border">Identificación</th>
                   <th className="p-3 border">Nombre</th>
                   <th className="p-3 border">Apellido</th>
                   <th className="p-3 border">Correo</th>
@@ -132,11 +160,11 @@ function ConsultarUsuarios({ onBack, onModificar, onEliminar }) {
               <tbody>
                 {usuarios.map((u) => (
                   <tr key={u.idusuario} className="hover:bg-gray-50">
-                    <td className="p-3 border">{u.idusuario}</td>
+                    <td className="p-3 border">{u.identificacion}</td>
                     <td className="p-3 border">{u.nombre}</td>
                     <td className="p-3 border">{u.apellido}</td>
                     <td className="p-3 border">{u.correo}</td>
-                    <td className="p-3 border">{u.idRol}</td>
+                    <td className="p-3 border">{u.nombreRol}</td>
                     <td className="p-3 border">
                       <img
                         src={obtenerUrlFoto(u.foto)}

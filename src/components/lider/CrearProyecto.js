@@ -15,7 +15,6 @@ function CrearProyecto({ usuario, onBack, onCreado }) {
   const [errorCampo, setErrorCampo] = useState(false);
   const [todosDesarrolladores, setTodosDesarrolladores] = useState([]);
 
-
   const hoyISO = new Date().toISOString().split("T")[0];
 
   useEffect(() => {
@@ -34,23 +33,15 @@ function CrearProyecto({ usuario, onBack, onCreado }) {
     if (name === "fechainicio") setErrorCampo(false);
   };
 
-  const handleDesarrolladoresChange = (e) => {
-    const opciones = Array.from(e.target.selectedOptions);
-    const ids = opciones.map((o) => parseInt(o.value));
-    setFormData((prev) => ({ ...prev, desarrolladores: ids }));
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMensaje("");
 
-   
     if (formData.fechainicio < hoyISO) {
       setMensaje("⚠️ La fecha de inicio no puede ser anterior a hoy.");
       setErrorCampo(true);
       return;
     }
-
 
     if (formData.fechafinal <= formData.fechainicio) {
       setMensaje("⚠️ La fecha final debe ser estrictamente posterior a la fecha de inicio.");
@@ -110,6 +101,7 @@ function CrearProyecto({ usuario, onBack, onCreado }) {
       )}
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {/* Nombre */}
         <div className="col-span-1 md:col-span-2">
           <label className="block mb-1 text-gray-700 font-medium">Nombre del proyecto</label>
           <input
@@ -122,6 +114,7 @@ function CrearProyecto({ usuario, onBack, onCreado }) {
           />
         </div>
 
+        {/* Descripción */}
         <div className="col-span-1 md:col-span-2">
           <label className="block mb-1 text-gray-700 font-medium">Descripción</label>
           <textarea
@@ -133,6 +126,7 @@ function CrearProyecto({ usuario, onBack, onCreado }) {
           />
         </div>
 
+        {/* Fecha inicio */}
         <div>
           <label className="block mb-1 text-gray-700 font-medium">Fecha de inicio</label>
           <input
@@ -148,6 +142,7 @@ function CrearProyecto({ usuario, onBack, onCreado }) {
           />
         </div>
 
+        {/* Fecha final */}
         <div>
           <label className="block mb-1 text-gray-700 font-medium">Fecha de finalización</label>
           <input
@@ -167,6 +162,7 @@ function CrearProyecto({ usuario, onBack, onCreado }) {
           />
         </div>
 
+        {/* Estado */}
         <div className="col-span-1 md:col-span-2">
           <label className="block mb-1 text-gray-700 font-medium">Estado</label>
           <input
@@ -177,22 +173,82 @@ function CrearProyecto({ usuario, onBack, onCreado }) {
           />
         </div>
 
+        {/* ✅ Desarrolladores */}
         <div className="col-span-1 md:col-span-2">
-          <label className="block mb-1 text-gray-700 font-medium">Asignar desarrolladores</label>
-          <select
-            multiple
-            value={formData.desarrolladores}
-            onChange={handleDesarrolladoresChange}
-            className="border p-3 rounded-xl w-full shadow-sm focus:ring-2 focus:ring-cyan-500 h-32"
-          >
-            {todosDesarrolladores.map((dev) => (
-              <option key={dev.idusuario} value={dev.idusuario}>
-                {dev.nombre} {dev.apellido}
-              </option>
-            ))}
-          </select>
+          <label className="block mb-2 text-gray-700 font-medium">Asignar desarrolladores</label>
+
+          <div className="border rounded-xl p-4 bg-gray-50 shadow-inner max-h-60 overflow-y-auto">
+            {/* Seleccionar todos */}
+            <div className="flex items-center mb-2 border-b pb-2">
+              <input
+                type="checkbox"
+                id="selectAll"
+                checked={
+                  formData.desarrolladores.length === todosDesarrolladores.length &&
+                  todosDesarrolladores.length > 0
+                }
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setFormData((prev) => ({
+                      ...prev,
+                      desarrolladores: todosDesarrolladores.map((dev) => dev.idusuario),
+                    }));
+                  } else {
+                    setFormData((prev) => ({ ...prev, desarrolladores: [] }));
+                  }
+                }}
+                className="w-4 h-4 text-cyan-600 rounded border-gray-300 focus:ring-cyan-500 cursor-pointer"
+              />
+              <label
+                htmlFor="selectAll"
+                className="ml-2 text-gray-700 font-medium cursor-pointer"
+              >
+                Seleccionar todos
+              </label>
+            </div>
+
+            {/* Lista de desarrolladores */}
+            {todosDesarrolladores.length > 0 ? (
+              todosDesarrolladores.map((dev) => (
+                <div key={dev.idusuario} className="flex items-center mb-2 pl-1">
+                  <input
+                    type="checkbox"
+                    id={`dev-${dev.idusuario}`}
+                    checked={formData.desarrolladores.includes(dev.idusuario)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setFormData((prev) => ({
+                          ...prev,
+                          desarrolladores: [...prev.desarrolladores, dev.idusuario],
+                        }));
+                      } else {
+                        setFormData((prev) => ({
+                          ...prev,
+                          desarrolladores: prev.desarrolladores.filter(
+                            (id) => id !== dev.idusuario
+                          ),
+                        }));
+                      }
+                    }}
+                    className="w-4 h-4 text-cyan-600 rounded-full border-gray-300 focus:ring-cyan-500 cursor-pointer"
+                  />
+                  <label
+                    htmlFor={`dev-${dev.idusuario}`}
+                    className="ml-2 text-gray-700 cursor-pointer select-none"
+                  >
+                    {dev.nombre} {dev.apellido}
+                  </label>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-500 text-sm italic text-center">
+                No hay desarrolladores disponibles
+              </p>
+            )}
+          </div>
         </div>
 
+        {/* Botones */}
         <div className="col-span-1 md:col-span-2 flex justify-between mt-6">
           <button
             type="submit"
